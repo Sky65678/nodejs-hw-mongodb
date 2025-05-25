@@ -10,5 +10,3 @@ const DB_URI = `mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_URL}
 export function initDatabaseConection() {
   return mongoose.connect(DB_URI);
 }
-
-// fQA9wZfjHaZmZO3Y
