@@ -1,3 +1,3 @@
-import { initDatabaseConection } from './db.js';
+import { setupServer } from './server.js';
 
-initDatabaseConection();
+setupServer();
