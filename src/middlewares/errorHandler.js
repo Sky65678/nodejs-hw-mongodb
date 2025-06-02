@@ -1,8 +1,7 @@
 function errorHandler(error, req, res, next) {
-  console.log(error);
-
-  res.status(500).json({
-    status: 500,
+  const status = error.status || 500;
+  res.status(status).json({
+    status,
     message: 'Something went wrong',
     data: error.message,
   });
