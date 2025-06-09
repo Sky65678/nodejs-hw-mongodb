@@ -6,10 +6,24 @@ import {
   updateContact,
 } from '../services/contacts.js';
 import createError from 'http-errors';
-import mongoose from 'mongoose';
+
+import { parsePaginationparams } from '../utils/parsePaginationParams.js';
+import { parseSortParams } from '../utils/parseSortParams.js';
+// import { parseIsFavoriteParams } from '../utils/parseIsFavouriteParams.js';
 
 async function getContactsController(req, res) {
-  const contacts = await getContacts();
+  const { page, perPage } = parsePaginationparams(req.query);
+  const { sortBy, sortOrder } = parseSortParams(req.query);
+  // const { contactType, isFavourite } = parseIsFavoriteParams(req.query);
+
+  const contacts = await getContacts({
+    page,
+    perPage,
+    sortBy,
+    sortOrder,
+    // contactType,
+    // isFavourite,
+  });
 
   res.status(200).json({
     status: 200,
@@ -20,10 +34,6 @@ async function getContactsController(req, res) {
 
 async function getContactByIdController(req, res) {
   const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    throw createError(404, 'Invalid contact ID');
-  }
 
   const contact = await getContactsById(id);
 
@@ -51,10 +61,6 @@ async function createContactController(req, res) {
 async function updateContactController(req, res) {
   const { id } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    throw createError(404, 'Invalid contact ID');
-  }
-
   const contact = await updateContact(id, req.body);
 
   if (contact === null) {
@@ -70,10 +76,6 @@ async function updateContactController(req, res) {
 
 async function deleteContactController(req, res) {
   const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    throw createError(404, 'Invalid contact ID');
-  }
 
   const contact = await deleteContact(id);
 

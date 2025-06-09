@@ -1,9 +1,43 @@
-import { getContactsController } from '../controllers/contacts.js';
 import Contact from '../models/contacts.js';
 
-export const getContacts = async () => {
-  const contacts = await Contact.find();
-  return contacts;
+export const getContacts = async ({
+  page,
+  perPage,
+  sortBy,
+  sortOrder,
+  contactType,
+  isFavourite,
+}) => {
+  const skip = page > 0 ? (page - 1) * perPage : 0;
+  // const filter = {};
+
+  // if (contactType) {
+  //   filter.contactType = contactType;
+  // }
+
+  // if (isFavourite !== undefined) {
+  //   filter.isFavourite = isFavourite === 'true';
+  // }
+
+  const [total, contacts] = await Promise.all([
+    Contact.countDocuments(),
+    Contact.find()
+      .sort({ [sortBy]: sortOrder })
+      .skip(skip)
+      .limit(perPage),
+  ]);
+
+  const totalPages = Math.ceil(total / perPage);
+
+  return {
+    contacts,
+    total,
+    page,
+    perPage,
+    totalPages,
+    hasPreviousPage: page > 1,
+    hasNextPage: totalPages > page,
+  };
 };
 
 export const getContactsById = async (id) => {
