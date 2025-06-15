@@ -18,8 +18,12 @@ import {
   updateContactSchema,
 } from '../validation/contact.js';
 
+import { authenticate } from '../middlewares/authenticate.js';
+
 const router = express.Router();
 const jsonParser = express.json();
+
+router.use(authenticate);
 
 router.get('/', ctrlWrapper(getContactsController));
 

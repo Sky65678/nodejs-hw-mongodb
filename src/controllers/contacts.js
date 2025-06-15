@@ -21,8 +21,7 @@ async function getContactsController(req, res) {
     perPage,
     sortBy,
     sortOrder,
-    // contactType,
-    // isFavourite,
+    userId: req.user.id,
   });
 
   res.status(200).json({
@@ -41,6 +40,10 @@ async function getContactByIdController(req, res) {
     throw createError(404, 'Contact not found');
   }
 
+  if (contact.userId.toString() !== req.user.id.toString()) {
+    throw createError(404, 'Contact not found');
+  }
+
   res.status(200).json({
     status: 200,
     message: 'Successfully found contact!',
@@ -49,7 +52,7 @@ async function getContactByIdController(req, res) {
 }
 
 async function createContactController(req, res) {
-  const contact = await createContact(req.body);
+  const contact = await createContact({ ...req.body, userId: req.user.id });
 
   res.status(201).json({
     status: 201,

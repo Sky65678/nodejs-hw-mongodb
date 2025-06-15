@@ -1,5 +1,6 @@
 import createError from 'http-errors';
 import bcrypt from 'bcrypt';
+import crypto from 'node:crypto';
 
 import { User } from '../models/auth.js';
 import { Session } from '../models/session.js';
@@ -29,10 +30,42 @@ export async function loginUser(email, password) {
     throw createError.Unauthorized('Email or password in incorrect');
   }
 
+  await Session.deleteOne({ userId: user._id });
+
   return Session.create({
     userId: user._id,
-    accessToken: 'AccessToken',
-    refreshToken: 'RefreshToken',
+    accessToken: crypto.randomBytes(30).toString('base64'),
+    refreshToken: crypto.randomBytes(30).toString('base64'),
+    accessTokenValidUntil: new Date(Date.now() + 15 * 60 * 1000),
+    refreshTokenValidUntil: new Date(Date.now() + 30 * 60 * 60 * 1000),
+  });
+}
+
+export async function logoutUser(sessionId) {
+  await Session.deleteOne({ _id: sessionId });
+}
+
+export async function refreshSession(sessionId, refreshToken) {
+  const session = await Session.findOne({ _id: sessionId });
+
+  if (session === null) {
+    throw new createError.Unauthorized('Sessiom not found');
+  }
+
+  if (session.refreshToken !== refreshToken) {
+    throw new createError.Unauthorized('Refresh token is invalid');
+  }
+
+  if (session.refreshTokenValidUntil < new Date()) {
+    throw new createError.Unauthorized('Refresh token is expired');
+  }
+
+  await Session.deleteOne({ _id: session._id });
+
+  return Session.create({
+    userId: session.userId,
+    accessToken: crypto.randomBytes(30).toString('base64'),
+    refreshToken: crypto.randomBytes(30).toString('base64'),
     accessTokenValidUntil: new Date(Date.now() + 15 * 60 * 1000),
     refreshTokenValidUntil: new Date(Date.now() + 30 * 60 * 60 * 1000),
   });
