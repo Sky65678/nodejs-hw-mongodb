@@ -32,13 +32,13 @@ export const getContacts = async ({
   };
 };
 
-export const getContactsById = async (id) => {
-  const contact = await Contact.findById(id);
+export const getContactsById = async (id, userId) => {
+  const contact = await Contact.findOne({ _id: id, userId });
   return contact;
 };
 
-export const deleteContact = async (id) => {
-  const contact = await Contact.findByIdAndDelete(id);
+export const deleteContact = async (id, userId) => {
+  const contact = await Contact.findOneAndDelete({ _id: id, userId });
   return contact;
 };
 
@@ -47,7 +47,9 @@ export const createContact = async (payload) => {
   return contact;
 };
 
-export const updateContact = async (id, payload) => {
-  const contact = await Contact.findByIdAndUpdate(id, payload, { new: true });
+export const updateContact = async (id, payload, userId) => {
+  const contact = await Contact.findOneAndUpdate({ _id: id, userId }, payload, {
+    new: true,
+  });
   return contact;
 };
