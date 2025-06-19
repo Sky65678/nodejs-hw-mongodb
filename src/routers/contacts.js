@@ -10,6 +10,7 @@ import {
 
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 
+import { upload } from '../middlewares/upload.js';
 import { isValidId } from '../middlewares/isValidId.js';
 import { validateBody } from '../middlewares/validateBody.js';
 
@@ -33,6 +34,7 @@ router.delete('/:id', isValidId, ctrlWrapper(deleteContactController));
 
 router.post(
   '/',
+  upload.single('photo'),
   jsonParser,
   validateBody(createContactSchema),
   ctrlWrapper(createContactController),
