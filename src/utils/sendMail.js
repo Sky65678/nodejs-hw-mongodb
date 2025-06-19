@@ -12,11 +12,19 @@ const transport = nodemailer.createTransport({
   },
 });
 
-export function sendMail(to, subject, html) {
-  return transport.sendMail({
-    from: getEnvVar('SMTP_FROM'),
-    to,
-    subject,
-    html,
-  });
+export async function sendMail(to, subject, html) {
+  try {
+    const info = await transport.sendMail({
+      from: getEnvVar('SMTP_FROM'),
+      to,
+      subject,
+      html,
+    });
+
+    console.log('Email sent:', info);
+    return info;
+  } catch (error) {
+    console.error('Failed to send email:', error);
+    throw error;
+  }
 }
