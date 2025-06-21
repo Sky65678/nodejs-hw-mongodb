@@ -1,3 +1,5 @@
+import * as fs from 'node:fs';
+import path from 'node:path';
 import 'dotenv/config';
 import express from 'express';
 import { initDatabaseConection } from './db.js';
@@ -10,8 +12,16 @@ import cookieParser from 'cookie-parser';
 import errorHandler from './middlewares/errorHandler.js';
 import notFoundHandler from './middlewares/notFoundHandler.js';
 
+import swaggerUi from 'swagger-ui-express';
+
 export async function setupServer() {
+  const SWAGGER_DOCUMENT = JSON.parse(
+    fs.readFileSync(path.join('docs', 'swagger.json'), 'utf-8'),
+  );
+
   const app = express();
+
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(SWAGGER_DOCUMENT));
 
   app.use(
     pino({
