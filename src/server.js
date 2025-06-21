@@ -13,16 +13,12 @@ import errorHandler from './middlewares/errorHandler.js';
 import notFoundHandler from './middlewares/notFoundHandler.js';
 
 import swaggerUi from 'swagger-ui-express';
+const SWAGGER_DOCUMENT = JSON.parse(
+  fs.readFileSync(path.join('docs', 'swagger.json'), 'utf-8'),
+);
 
 export async function setupServer() {
-  const SWAGGER_DOCUMENT = JSON.parse(
-    fs.readFileSync(path.join('docs', 'swagger.json'), 'utf-8'),
-  );
-
   const app = express();
-
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(SWAGGER_DOCUMENT));
-
   app.use(
     pino({
       transport: {
@@ -30,11 +26,9 @@ export async function setupServer() {
       },
     }),
   );
-
   app.use(cors());
-
   app.use(cookieParser());
-
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(SWAGGER_DOCUMENT));
   app.use('/contacts', contactsRouter);
   app.use('/auth', authRouter);
 
