@@ -27,8 +27,10 @@ export async function setupServer() {
     }),
   );
   app.use(cors());
+
   app.use(cookieParser());
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(SWAGGER_DOCUMENT));
+
   app.use('/contacts', contactsRouter);
   app.use('/auth', authRouter);
 

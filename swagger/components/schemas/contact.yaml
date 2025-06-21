@@ -20,8 +20,8 @@ properties:
     example: 'John Doe'
   phoneNumber:
     description: 'Contatct phone number'
-    type: number
-    example: 38068000987
+    type: string
+    example: '38068000987'
   email:
     description: 'Contatct email'
     type: string
